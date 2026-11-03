@@ -5,14 +5,27 @@
 **Data:** EIA daily settlement prices for WTI contracts 1–4, **January 1985 to 5 April 2024**, plus Yahoo Finance prices for the latest futures curve. New to these terms? Start with [docs/NOTES.md](docs/NOTES.md).
 
 ## Answer in four bullets
-- **Roll yield was a big part of the return, but its sign depended on the era.** A position that holds contract 2 and rolls every month returned **+145%** (log) over 1985–2024. Of that, **+120 came from price change and +24 from roll yield**, about 17% of the total. That small long-run number hides two very different eras: roll yield added **+73** in 1985–89 and **+42** in the 1990s, then cost **−64** in the 2010s and **−32** in 2020–24.
+- **Roll yield was a big part of the return, but its sign depended on the era.** Holding contract 2 and rolling it every month turned **$1 into $4.25 (+325%)** over 1985–2024. Price changes alone would have made it $3.34. Roll yield multiplied that by **1.28 (+28%)**. That modest long-run figure hides two very different eras: rolling **doubled** the money in 1985–89 (+108%) and added +52% in the 1990s, then **cut it nearly in half** in the 2010s (−47%) and took −27% in 2020–24.
 - **Contango and backwardation each held about half the time,** but in long stretches. WTI was in contango on **53.6%** of days and backwardation on **45.7%**. It was mostly backwardation before 2004 and almost always contango from 2005 to 2017; the longest stretch was **57 months, October 2008 to June 2013**. It flipped back to backwardation in 2021–22.
 - **The sign checks out.** Contango months averaged **−0.95%** a month of roll yield and backwardation months **+1.31%**. By era: about **+8.6% a year** in 1985–2003, **−8.0%** in 2004–17 and **+1.9%** in 2018–24. Negative means you pay to roll.
 - **Today (3 November 2026, live Yahoo data) the curve is in steep backwardation.** December 2026 is $96.96 and November 2027 is $80.05. If that shape lasted, a rolled position would earn about 2% a month from the roll. Our EIA history stops in April 2024, so this is a snapshot, not part of the backtest.
 
 ![Holding futures vs the front-month price](charts/spot_vs_rolled.png)
 
-| Period | Total (log) | From price | From roll yield | Roll yield per year |
+**Plain version: what happened to $1.** The price and roll parts **multiply**: price × roll = total.
+
+| Period | $1 grew to | Price alone multiplied it by | Roll yield multiplied it by | Roll yield per year |
+|---|---|---|---|---|
+| **1985–2024** | **$4.25 (+325%)** | **×3.34 (+234%)** | **×1.28 (+28%)** | **+0.6%** |
+| 1985–1989 | $1.73 (+73%) | ×0.83 (−17%) | ×2.08 (+108%) | +15.9% |
+| 1990–1999 | $1.76 (+76%) | ×1.15 (+15%) | ×1.52 (+52%) | +4.3% |
+| 2000–2009 | $3.37 (+237%) | ×3.23 (+223%) | ×1.04 (+4%) | +0.4% |
+| 2010–2019 | $0.40 (−60%) | ×0.76 (−24%) | ×0.53 (−47%) | −6.2% |
+| 2020–Apr 2024 | $1.03 (+3%) | ×1.42 (+42%) | ×0.73 (−27%) | −7.2% |
+
+**Log version: the same numbers as log returns.** The price and roll parts **add**: price + roll = total. This is how the code does the split, and it is the clean way to say what *share* came from roll yield. Over the full period, roll yield is 24 of the 145 log points, about 17%.
+
+| Period | Total (log) | From price (log) | From roll yield (log) | Roll yield per year (log) |
 |---|---|---|---|---|
 | **1985–2024** | **+145%** | **+120%** | **+24%** | **+0.6%** |
 | 1985–1989 | +55% | −18% | +73% | +14.7% |
@@ -21,7 +34,7 @@
 | 2010–2019 | −91% | −28% | −64% | −6.4% |
 | 2020–Apr 2024 | +3% | +35% | −32% | −7.5% |
 
-Log returns are used so the price and roll parts add up exactly (+100% in log terms ≈ 2.7×). These figures leave out the interest earned on the unused cash and trading costs.
+To convert, $1 grows to e^(log return): +145% log → e^1.45 ≈ $4.25. Small values are almost the same either way (+4% log ≈ +4% plain). Large ones are not: −64% log is a −47% plain loss, not −64%. Neither table includes interest on the unused cash or trading costs.
 
 ## When does the curve flip?
 ![Share of days in contango vs backwardation, by year](charts/share_by_year.png)
