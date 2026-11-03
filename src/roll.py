@@ -1,4 +1,5 @@
 """Roll math for WTI futures. Small, pure functions so they are easy to test."""
+import numpy as np
 import pandas as pd
 
 BDAY = pd.offsets.BDay(1)
@@ -39,3 +40,27 @@ def label_curve(near, far):
     labels[spread < 0] = "backwardation"
     labels[spread == 0] = "flat"
     return labels
+
+
+def rolled_returns(df):
+    """Daily log returns of a position that always holds contract 2.
+
+    df needs columns date, c2, c3. When contract 1 expires, yesterday's c3 becomes
+    today's c2, so on that day we 'roll' and measure against yesterday's c3:
+        normal day: total = log(c2_t / c2_{t-1})
+        roll day:   total = log(c2_t / c3_{t-1})
+    Split (exact, because logs add up):
+        price = log(c2_t / c2_{t-1})          what the c2 price series did
+        roll  = log(c2_{t-1} / c3_{t-1})      only on roll days; > 0 backwardation, < 0 contango
+        total = price + roll
+    """
+    d = df.dropna(subset=["c2", "c3"]).sort_values("date").reset_index(drop=True)
+    expiries = pd.DatetimeIndex(roll_dates(d["date"].min(), d["date"].max()))
+    prev = d["date"].shift()
+    # Roll day = first row after an expiry date (expiry day itself still has the old contract 1).
+    d["is_roll"] = [bool(((p <= expiries) & (expiries < t)).any()) if pd.notna(p) else False
+                    for p, t in zip(prev, d["date"])]
+    d["price_ret"] = np.log(d["c2"] / d["c2"].shift())
+    d["roll_ret"] = np.where(d["is_roll"], np.log(d["c2"].shift() / d["c3"].shift()), 0.0)
+    d["total_ret"] = d["price_ret"] + d["roll_ret"]
+    return d.iloc[1:].reset_index(drop=True)
