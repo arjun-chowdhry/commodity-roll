@@ -24,4 +24,18 @@ Clean output: `data/clean/wti_c1_c4.csv`, produced by `python src/m1_clean.py`.
 On 20 April 2020, the May 2020 contract was one day from expiry. A futures contract left open at expiry means taking physical delivery of oil at Cushing, Oklahoma, and storage there was nearly full. Holders who couldn't take delivery paid other traders to take the contracts off their hands, so the price settled at −$37.63. The next contract (June) still traded at about +$20. This is the clearest real-world example of why you don't hold the front month into expiry.
 
 ## Known approximations
-- **Roll dates are calculated, not taken from the data.** The EIA file doesn't say which contract month each column refers to on a given day. We use the CME rule instead: trading ends 3 business days before the 25th (general knowledge). We count weekdays only and ignore holidays, so a few roll dates may be off by a day. Milestone 3 checks the calculated dates against the price data.
+- **Roll dates are calculated, not taken from the data.** The EIA file doesn't say which contract month each column refers to on a given day. We use the CME rule instead: trading ends 3 business days before the 25th (general knowledge). We count weekdays only and ignore holidays, so a few roll dates may be off by a day. Milestone 3 checks the calculated dates against the price data (next section).
+
+## Roll-date check (Milestone 3)
+On the day the contracts roll, today's c1 and c2 should continue *yesterday's c2 and c3*. On any other day they should continue *yesterday's c1 and c2*. For each day, we test which story fits the prices better. Only days where the two stories differ by more than 10 cents count. We then shift our calculated roll dates earlier or later and rerun the test (`results/roll_date_check.csv`):
+
+| Shift from our date | −3 | −2 | −1 | **0** | +1 | +2 | +3 |
+|---|---|---|---|---|---|---|---|
+| Days whose prices fit a roll | 10% | 15% | 33% | **90%** | 9% | 6% | 8% |
+
+Ordinary (non-roll) days fit a roll about 10% of the time, which is the noise level. Our calculated date wins clearly. The higher reading at −1 is what you'd expect from occasional holiday errors and from prices converging on the expiry day itself.
+
+A simpler first check asked only "is today's c1 closer to yesterday's c2 than to yesterday's c1?". It passed only 61% of roll days, because when the curve is flat, the spread between contracts is smaller than a normal day's move. That check was weak, not wrong, so we replaced it.
+
+## The April 2020 roll
+The rolled position holds contract 2, so it avoided the −$37.63 day. It still had to roll on 22 April 2020: it sold June at $11.57 and bought July at $18.69, losing 38% in one day. That is a real cost from the steepest contango in the data, not an error, so we keep it. It explains most of the gap between Milestone 2's smoothed estimate (+1.6% a year) and the roll yield actually earned (+0.6% a year). Without April–May 2020, the earned figure is +1.9% a year.
