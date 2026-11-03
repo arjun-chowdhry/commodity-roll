@@ -21,3 +21,12 @@ def test_roll_dates_one_per_month():
     dates = roll_dates("2023-01-01", "2023-12-31")
     assert len(dates) == 12
     assert all(d.day < 25 for d in dates)
+
+
+def test_label_curve():
+    from roll import label_curve
+    near = [50.0, 50.0, 50.0, None]
+    far = [51.0, 49.0, 50.0, 50.0]
+    labels = label_curve(near, far)
+    assert list(labels[:3]) == ["contango", "backwardation", "flat"]
+    assert pd.isna(labels[3])  # missing price -> no label

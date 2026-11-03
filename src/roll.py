@@ -23,3 +23,19 @@ def roll_dates(start, end):
     months = pd.period_range(pd.Timestamp(start), pd.Timestamp(end), freq="M")
     dates = [expiry_date(p.year, p.month) for p in months]
     return [d for d in dates if pd.Timestamp(start) <= d <= pd.Timestamp(end)]
+
+
+def label_curve(near, far):
+    """Label each day's curve shape from a near and a far contract price.
+
+    far > near -> "contango"       (later oil costs more)
+    far < near -> "backwardation"  (later oil costs less)
+    equal      -> "flat"; a missing price -> None
+    """
+    near, far = pd.Series(near, dtype=float), pd.Series(far, dtype=float)
+    spread = far - near
+    labels = pd.Series(None, index=spread.index, dtype=object)
+    labels[spread > 0] = "contango"
+    labels[spread < 0] = "backwardation"
+    labels[spread == 0] = "flat"
+    return labels
