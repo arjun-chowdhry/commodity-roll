@@ -47,7 +47,7 @@ Holding futures pays you three things (general knowledge):
 This project measures 1 and 2. We use **log returns** because they add up neatly: total = price + roll, exactly. Rough translation: +100% in log terms means the value went up about 2.7×.
 
 ## Why USO lags oil
-USO (United States Oil Fund) is an ETF that holds WTI futures, not barrels (general knowledge). It launched in 2006, just as WTI moved into a decade of mostly contango. It held the front month and rolled every month, so it kept paying the contango roll cost. Over the years, USO fell far behind the oil price that people saw on TV. Our data shows the same pattern: in 2010–2019 the rolled position lost **−64% (log) from roll yield alone**.
+USO (United States Oil Fund) is an ETF that holds WTI futures, not barrels (general knowledge). It launched in 2006, just as WTI moved into a decade of mostly contango. It held the front month and rolled every month, so it kept paying the contango roll cost. Over the years, USO fell far behind the oil price that people saw on TV. Our data shows the same pattern: in 2010–2019 roll yield alone **cut the rolled position by 47%**, nearly half its value.
 
 In April 2020, contango became extreme and the front month went negative (general knowledge). USO moved its holdings into later months, spreading its money across contracts up to a year out. That was partly to avoid the expiring contract and partly because exchanges limited its positions. It also did a 1-for-8 reverse split after its price collapsed.
 
@@ -65,6 +65,6 @@ We don't have a true spot (physical) price series in this project. The front-mon
 - `latest_curve.png`: the curve across the next 12 delivery months on the latest date available.
 
 ## Interview soundbites (from our numbers)
-- "Over 1985 to April 2024, a rolled WTI position returned about +145% in log terms. Roughly +120 of that came from price and +24 from roll yield. But roll yield was +73 in just the late 1980s and −64 in the 2010s, so the long-run total hides two very different eras."
+- "From 1985 to April 2024, a rolled WTI position turned $1 into about $4.25. Price alone would have made it $3.34, and roll yield multiplied that by 1.28. But rolling doubled the money in the late 1980s and cut it nearly in half in the 2010s, so the long-run total hides two very different eras."
 - "Roll yield is about the *shape* of the curve, not the *level* of the price. In contango you pay to roll even if oil goes nowhere."
 - "One roll day in April 2020 cost 38%. That's why serious oil products avoid holding the expiring month."
